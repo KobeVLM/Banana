@@ -7,7 +7,6 @@ dnspython
 toml
 pyperclip
 PySocks
-keyboard
 mysql-connector-python
 bcrypt
 beautifulsoup4

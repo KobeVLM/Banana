@@ -50,7 +50,7 @@ def velocity():
     r = requests.get("https://api.papermc.io/v2/projects/velocity").json()
     version, build = r["versions"][-1], requests.get(f"https://api.papermc.io/v2/projects/velocity/versions/{r['versions'][-1]}").json()["builds"][-1]
     url = f"https://api.papermc.io/v2/projects/velocity/versions/{version}/builds/{build}/downloads/velocity-{version}-{build}.jar"
-    fakeproxy_url = f"https://github.com/Renovsk/Plantain/releases/download/fp-1/plantain-fakeproxy-1.0.jar"
+    fakeproxy_url = f"https://github.com/x3fication/Plantain/releases/download/fp-1/plantain-fakeproxy-1.0.jar"
     jar = requests.get(url).content
 
     os.makedirs('./proxy/velocity/', exist_ok=True)
