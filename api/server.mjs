@@ -59,6 +59,11 @@ app.post('/connect', async (req, res) => {
       };
     }
 
+    // Initialize status BEFORE creating bot
+    botz[server] = botz[server] || {};
+    statuz[server] = statuz[server] || {};
+    statuz[server][username] = { connected: false, username };
+
     const bot = createBot({
       username,
       host,
@@ -67,14 +72,14 @@ app.post('/connect', async (req, res) => {
       connect: customConnect
     });
 
-    bot.on('login', () => console.log(`[Bot] Logged in as ${username} on ${server}`));
-    bot.on('spawn', () => statuz[server][username].connected = true);
+    // Set connected on LOGIN, not spawn (to bypass loading screen hang)
+    bot.on('login', () => {
+      statuz[server][username].connected = true;
+      console.log(`[Bot] Logged in as ${username} on ${server}`);
+    });
     bot.on('error', err => console.error(`[Bot] ${err.message}`));
 
-    botz[server] = botz[server] || {};
-    statuz[server] = statuz[server] || {};
     botz[server][username] = bot;
-    statuz[server][username] = { connected: false, username };
 
     res.json({ message: 'Bot connecting...', server, username, status: 'connecting' });
 
@@ -91,8 +96,13 @@ app.post('/send', (req, res) => {
   const bot = botz[server]?.[username];
   if (!bot) return res.status(400).json({ error: 'No bot with this username connected.' });
   
-  bot.chat(message);
-  res.json({ message: `Sent to ${server} by ${username}: ${message}` });
+  try {
+    // Try the standard chat method first
+    bot.chat(message);
+    res.json({ message: `Sent to ${server} by ${username}: ${message}` });
+  } catch (e) {
+    res.status(500).json({ error: `Chat failed: ${e.message}. Bot may not be fully connected yet.` });
+  }
 });
 
 app.post('/disconnect', (req, res) => {

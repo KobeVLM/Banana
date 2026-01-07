@@ -5,9 +5,17 @@ def rcon(server, password):
     # validate server
     if checkserver(server) == False: logging.error('Please input a real domain or server'); return
 
+    # parse host and port
+    if ':' in server:
+        host, port = server.split(':')
+        port = int(port)
+    else:
+        host = server
+        port = 25575  # default RCON port
+
     try:
         # connect to the server using rcon
-        with MCRcon(server, password) as mcr:
+        with MCRcon(host, password, port=port) as mcr:
             logging.info(f'Type "exit" to exit the rcon client')
 
             # command loop

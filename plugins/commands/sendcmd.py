@@ -15,11 +15,11 @@ def sendcmd(username, server, file, proxy=None):
         response = requests.post('http://localhost:6969/connect', json=payload)
         if response.status_code != 200 and response.status_code != 400:
             return logging.error(f'Failed to connect [{response.status_code}]')
-        for i in range(10):
+        for i in range(30):
             r = requests.get('http://localhost:6969/status').json()[server + ':' + str(port)][username]['connected']
             if r == True: connected = True; break
             logging.info('Waiting for connection...')
-            time.sleep(2)
+            time.sleep(1)
         
         with open(file, 'r') as f:
             commands = [line.strip() for line in f if line.strip()] 
